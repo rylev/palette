@@ -1,4 +1,9 @@
 defmodule Palette.Color do
+
+  def distance(color1, color2) do
+    delta_e_2000 rgb_to_lab(color1), rgb_to_lab(color2)
+  end
+
   # http://www.easyrgb.com/index.php?X=MATH&H=02#text2
   def rgb_to_xyz(rgb) do
     [r, g, b] = Enum.map rgb, fn v ->
@@ -53,7 +58,7 @@ defmodule Palette.Color do
           a < 0 -> 180
           a > 0 && b < 0 -> 360
         end
-        rad_to_deg(:math.atan(div(b, a))) + bias
+        rad_to_deg(:math.atan(b/a)) + bias
     end
   end
 
@@ -64,7 +69,7 @@ defmodule Palette.Color do
 
     xC1 = :math.sqrt(:math.pow(a1, 2) + :math.pow(b1, 2))
     xC2 = :math.sqrt(:math.pow(a2, 2) + :math.pow(b2, 2))
-    xCX = div (xC1 + xC2), 2
+    xCX = (xC1 + xC2) / 2
     xGX = 0.5 * (1 - :math.sqrt((:math.pow(xCX, 7)) / ((:math.pow xCX, 7) + (:math.pow(25, 7)))))
     xNN = (1 + xGX) * a1
     xC1 = :math.sqrt((:math.pow xNN, 2) + (:math.pow b1, 2))
