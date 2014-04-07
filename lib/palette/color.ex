@@ -4,6 +4,10 @@ defmodule Palette.Color do
     delta_e_2000 rgb_to_lab(color1), rgb_to_lab(color2)
   end
 
+  def closest(color, comparison_colors) when is_list comparison_colors do
+    comparison_colors |> Enum.map(&([&1, abs(distance(color, &1))])) |> Enum.sort(fn ([_,d1], [_,d2]) -> d1 < d2 end) |> List.first |> List.first
+  end
+
   # http://www.easyrgb.com/index.php?X=MATH&H=02#text2
   def rgb_to_xyz(rgb) do
     [r, g, b] = Enum.map rgb, fn v ->
@@ -82,7 +86,7 @@ defmodule Palette.Color do
     if (xC1 * xC2) == 0 do
       xDH = 0
     else
-      xNN = Float.round xH2 - xH1, 12
+      xNN = Float.round ((xH2 - xH1)/1), 12
       if abs(xNN) <= 180 do
         xDH = xH2 - xH1
       else
@@ -99,7 +103,7 @@ defmodule Palette.Color do
     if xC1 * xC2 == 0 do
       xHX = xH1 + xH2
     else
-      xNN = Float.round(xH1 - xH2, 12) |> abs
+      xNN = Float.round((xH1 - xH2)/1, 12) |> abs
       if xNN > 180 do
         if xH2 + xH1 < 360 do
           xHX = xH1 + xH2 + 360

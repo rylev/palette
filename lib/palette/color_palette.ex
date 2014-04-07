@@ -266,16 +266,20 @@ defmodule Palette.ColorPalette do
     [238, 238, 238]
   ]
 
-  def closest_color(rgb) do
-    distances = Enum.map colors, (fn c ->
-      distance = case c do
-        nil -> 10000000000000000
-        _ -> Palette.Color.distance(rgb, c)
-      end
-      [distance, c]
-    end)
-    [_, closest_color] = distances |> Enum.sort(fn [distance1, _], [distance2, _] -> distance1 < distance2 end) |> hd
-    closest_color
+  def display do
+    colors |>
+    Enum.filter(fn color -> color != nil end) |>
+    Enum.with_index |>
+    Enum.map(&background/1) |>
+    Enum.join
+  end
+
+  def background({ color, index }) do
+    Palette.Style.bg String.duplicate(" ", 9), color
+  end
+
+  def closest(rgb) do
+    Palette.Color.closest(rgb, Enum.filter(colors, &(&1 != nil)))
   end
 
   def ansi_code(rgb) do
