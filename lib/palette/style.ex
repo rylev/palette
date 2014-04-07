@@ -1,12 +1,10 @@
 defmodule Palette.Style do
   def fg(string, color) do
-    color_id = color_approximation(color)
-    "\033[38;5;#{color_id}m" <> string <> "\033[0m"
+    process string, &(foreground(&1, color))
   end
 
   def bg(string, color) do
-    color_id = color_approximation(color)
-    "\033[48;5;#{color_id}m" <> string <> "\033[0m"
+    process string, &(background(&1, color))
   end
 
   def bright(string) do
@@ -17,11 +15,30 @@ defmodule Palette.Style do
     process string, &(IO.ANSI.escape "%{underline}#{&1}")
   end
 
+  defp background(content, rgb) do
+    background("#{color_approximation(rgb)}m" <> content)
+  end
+  defp foreground(content, rgb) do
+    foreground("#{color_approximation(rgb)}m" <> content)
+  end
+
+  defp foreground(content) do
+    "\e[38;5;" <> content <> postfix
+  end
+
+  defp background(content) do
+    "\e[48;5;" <> content <> postfix
+  end
+
+  defp postfix do
+    "\033[0m"
+  end
+
   defp process(string, process_fun) do
     String.split(string, "\n") |> Enum.filter(&(&1 != "")) |> Enum.map(process_fun) |> Enum.join("\n")
   end
 
-  def color_approximation(rgb_string) do
+  defp color_approximation(rgb_string) do
     rgb_string |> parse_rgb |> Palette.ColorPalette.closest_color |> Palette.ColorPalette.color_code
   end
 
@@ -43,7 +60,7 @@ defmodule Palette.Style do
     valid_rgb_format?(rgb_string) && valid_rgb_length?(rgb_string)
   end
 
-  def rgb_hex(rgb_string) do
+  defp rgb_hex(rgb_string) do
     case rgb_string do
       "#" <> rest -> rest
       "0x" <> rest -> rest
