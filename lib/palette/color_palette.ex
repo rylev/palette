@@ -267,7 +267,7 @@ defmodule Palette.ColorPalette do
   ]
 
   def closest_color(rgb) do
-    distances = Enum.map @colors, (fn c ->
+    distances = Enum.map colors, (fn c ->
       distance = case c do
         nil -> 10000000000000000
         _ -> Palette.Color.distance(rgb, c)
@@ -276,5 +276,13 @@ defmodule Palette.ColorPalette do
     end)
     [_, closest_color] = distances |> Enum.sort(fn [distance1, _], [distance2, _] -> distance1 < distance2 end) |> hd
     closest_color
+  end
+
+  def color_code(rgb) do
+    Enum.find_index(colors, fn color -> color == rgb end)
+  end
+
+  def colors do
+    @colors
   end
 end

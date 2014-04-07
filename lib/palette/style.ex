@@ -1,7 +1,12 @@
 defmodule Palette.Style do
   def fg(string, color) do
-    color = color_approximation(color)
-    process string, &(IO.ANSI.escape "%{#{color}}#{&1}")
+    color_id = color_approximation(color)
+    "\033[38;5;#{color_id}m" <> string <> "\033[0m"
+  end
+
+  def bg(string, color) do
+    color_id = color_approximation(color)
+    "\033[48;5;#{color_id}m" <> string <> "\033[0m"
   end
 
   def bright(string) do
@@ -16,9 +21,8 @@ defmodule Palette.Style do
     String.split(string, "\n") |> Enum.filter(&(&1 != "")) |> Enum.map(process_fun) |> Enum.join("\n")
   end
 
-  defp color_approximation(rgb_string) do
-    parse_rgb rgb_string
-    "red"
+  def color_approximation(rgb_string) do
+    rgb_string |> parse_rgb |> Palette.ColorPalette.closest_color |> Palette.ColorPalette.color_code
   end
 
   defp parse_rgb(rgb_string) when is_binary rgb_string do
@@ -35,7 +39,7 @@ defmodule Palette.Style do
     Enum.map(&(binary_to_integer &1, 16))
   end
 
-  def valid_rgb_string?(rgb_string) do
+  defp valid_rgb_string?(rgb_string) do
     valid_rgb_format?(rgb_string) && valid_rgb_length?(rgb_string)
   end
 
