@@ -278,11 +278,11 @@ defmodule Palette.ColorPalette do
     closest_color
   end
 
-  def color_code(rgb) do
+  def ansi_code(rgb) do
     Enum.find_index(colors, fn color -> color == rgb end)
   end
 
-  def colors do
+  defp colors do
     @colors
   end
 end
