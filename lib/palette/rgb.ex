@@ -1,5 +1,19 @@
 defmodule Palette.RGB do
   import Enum, only: [map: 2, join: 1, filter: 2, chunk: 2, count: 1]
+  colors = %{
+    black: [0, 0, 0],
+    white: [255, 255, 255],
+    red: [255, 0, 0],
+    blue: [0, 0, 255],
+    green: [0, 95, 0],
+    # yellow: [255, 255, 0],
+    purple: [95, 0, 95],
+    grey: [80, 80, 80]
+  }
+
+  Enum.map colors, fn { name, rgb } ->
+    def unquote(name)(), do: unquote(rgb)
+  end
 
   def closest_color(rgb_string) when is_binary rgb_string do
     rgb_string |> parse |> Palette.Color.Palette.closest
@@ -29,14 +43,6 @@ defmodule Palette.RGB do
       fn list -> chunk(list, div(count(list), 3)) end.() |>
       map(&join/1) |>
       map(&(binary_to_integer &1, 16))
-  end
-
-  def black do
-    [0, 0, 0]
-  end
-
-  def white do
-    [255, 255, 255]
   end
 
   defp valid_rgb_string?(rgb_string) do

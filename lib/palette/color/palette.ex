@@ -1,5 +1,5 @@
 defmodule Palette.Color.Palette do
-  @colors [
+  colors = [
     # ANSI colours (the first 16) are configurable by users in most
     # terminals. Therefore, they're not used for colour matching, unless
     # they were explicitly configured in tco.conf.
@@ -266,6 +266,12 @@ defmodule Palette.Color.Palette do
     [238, 238, 238]
   ]
 
+  Enum.map colors, fn rgb ->
+    def closest(unquote(rgb)), do: unquote(rgb)
+  end
+
+  defp colors, do: unquote(colors)
+
   def display do
     colors_with_index |>
       Enum.chunk(9) |>
@@ -318,7 +324,4 @@ defmodule Palette.Color.Palette do
     Palette.Style.color "    #{Palette.RGB.encode(color)}    ", font_color, color
   end
 
-  defp colors do
-    @colors
-  end
 end
