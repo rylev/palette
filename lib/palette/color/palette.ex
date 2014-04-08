@@ -314,8 +314,8 @@ defmodule Palette.Color.Palette do
   end
 
   defp write({ color, index }) do
-    font_color = Palette.Color.Distance.furthest(color, [RGB.white, RGB.black])
-    Palette.Style.color "    #{RGB.encode(color)}    ", font_color, color
+    font_color = Palette.Color.Distance.furthest(color, [Palette.RGB.white, Palette.RGB.black])
+    Palette.Style.color "    #{Palette.RGB.encode(color)}    ", font_color, color
   end
 
   defp colors do

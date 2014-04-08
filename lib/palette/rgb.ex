@@ -1,48 +1,51 @@
-defmodule RGB do
+defmodule Palette.RGB do
+  import Enum, only: [map: 2, join: 1, filter: 2, chunk: 2, count: 1]
+
   def closest_color(rgb_string) when is_binary rgb_string do
-    rgb_string |> parse_rgb |> Palette.Color.Palette.closest
+    rgb_string |> parse |> Palette.Color.Palette.closest
   end
   def closest_color(rgb_list) when is_list rgb_list do
     rgb_list |> Palette.Color.Palette.closest
   end
 
-  def encode([r, g, b]) do
-    "#000000"
+  def encode(rgb) do
+    hex = rgb |>
+      map(&(integer_to_list &1, 16)) |>
+      map(fn [x] -> [x, x]; x  -> x end) |>
+      map(&String.from_char_list!/1) |>
+      join
+    "#" <> hex
+  end
+
+  def parse(rgb_string) when is_binary rgb_string do
+    unless valid_rgb_string?(rgb_string) do
+      raise "#{rgb_string} is not a valid rgb color"
+    end
+
+    rgb_string |>
+      rgb_hex |>
+      String.split("") |>
+      filter(&(&1 != "")) |>
+      fn list -> chunk(list, div(count(list), 3)) end.() |>
+      map(&join/1) |>
+      map(&(binary_to_integer &1, 16))
   end
 
   def black do
-    [00,00,00]
+    [0, 0, 0]
   end
 
   def white do
     [255, 255, 255]
   end
 
-  def parse_rgb(rgb_string) when is_binary rgb_string do
-    unless valid_rgb_string?(rgb_string) do
-      raise "#{rgb_string} is not a valid rgb color"
-    end
-
-    rgb_string |>
-    rgb_hex |>
-    String.split("") |>
-    Enum.filter(&(&1 != "")) |>
-    fn list -> Enum.chunk(list, div(Enum.count(list), 3)) end.() |>
-    Enum.map(&Enum.join/1) |>
-    Enum.map(&(binary_to_integer &1, 16))
-  end
-
   defp valid_rgb_string?(rgb_string) do
     valid_rgb_format?(rgb_string) && valid_rgb_length?(rgb_string)
   end
 
-  defp rgb_hex(rgb_string) do
-    case rgb_string do
-      "#" <> rest -> rest
-      "0x" <> rest -> rest
-      _ -> rgb_string
-    end
-  end
+  defp rgb_hex("#" <> rest), do: rest
+  defp rgb_hex("0x" <> rest), do: rest
+  defp rgb_hex(full), do: full
 
   defp valid_rgb_length?(rgb_string) do
     hex = rgb_hex rgb_string
