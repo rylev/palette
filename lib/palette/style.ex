@@ -1,4 +1,15 @@
 defmodule Palette.Style do
+  Palette.RGB.colors_map |> Enum.each fn {color, rgb} ->
+    color_name = atom_to_binary(color)
+    def fg(string, unquote(color_name)) do
+      fg(string, unquote(rgb))
+    end
+
+    def bg(string, unquote(color_name)) do
+      bg(string, unquote(rgb))
+    end
+  end
+
   def color(string, fg, bg) do
     string |> fg(fg) |> bg(bg)
   end

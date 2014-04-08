@@ -6,7 +6,7 @@ defmodule Palette.RGB do
     red: [255, 0, 0],
     blue: [0, 0, 255],
     green: [0, 95, 0],
-    # yellow: [255, 255, 0],
+    yellow: [255, 255, 0],
     purple: [95, 0, 95],
     grey: [80, 80, 80]
   }
@@ -14,6 +14,7 @@ defmodule Palette.RGB do
   Enum.map colors, fn { name, rgb } ->
     def unquote(name)(), do: unquote(rgb)
   end
+  def colors_map, do: unquote(Macro.escape(colors))
 
   def closest_color(rgb_string) when is_binary rgb_string do
     rgb_string |> parse |> Palette.Color.Palette.closest
