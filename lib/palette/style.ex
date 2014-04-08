@@ -14,6 +14,7 @@ defmodule Palette.Style do
   def bright(string) do
     process string, &(IO.ANSI.escape "%{bright}#{&1}")
   end
+
   def bold(string), do: bright(string)
 
   def underline(string) do
