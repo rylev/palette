@@ -8,6 +8,10 @@ defmodule Palette.Color do
     comparison_colors |> Enum.map(&([&1, abs(distance(color, &1))])) |> Enum.sort(fn ([_,d1], [_,d2]) -> d1 < d2 end) |> List.first |> List.first
   end
 
+  def furthest(color, comparison_colors) when is_list comparison_colors do
+    comparison_colors |> Enum.map(&([&1, abs(distance(color, &1))])) |> Enum.sort(fn ([_,d1], [_,d2]) -> d1 > d2 end) |> List.first |> List.first
+  end
+
   # http://www.easyrgb.com/index.php?X=MATH&H=02#text2
   def rgb_to_xyz(rgb) do
     [r, g, b] = Enum.map rgb, fn v ->

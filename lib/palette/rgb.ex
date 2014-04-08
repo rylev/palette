@@ -6,6 +6,18 @@ defmodule RGB do
     rgb_list |> Palette.ColorPalette.closest
   end
 
+  def encode([r, g, b]) do
+    "#000000"
+  end
+
+  def black do
+    [00,00,00]
+  end
+
+  def white do
+    [255, 255, 255]
+  end
+
   def parse_rgb(rgb_string) when is_binary rgb_string do
     unless valid_rgb_string?(rgb_string) do
       raise "#{rgb_string} is not a valid rgb color"

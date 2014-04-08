@@ -267,15 +267,10 @@ defmodule Palette.ColorPalette do
   ]
 
   def display do
-    colors |>
-    Enum.filter(fn color -> color != nil end) |>
-    Enum.with_index |>
-    Enum.map(&background/1) |>
-    Enum.join
-  end
-
-  def background({ color, index }) do
-    Palette.Style.bg String.duplicate(" ", 9), color
+    colors_with_index |>
+    Enum.chunk(9) |>
+    Enum.map(&each_chunk/1) |>
+    Enum.join("\n")
   end
 
   def closest(rgb) do
@@ -284,6 +279,45 @@ defmodule Palette.ColorPalette do
 
   def ansi_code(rgb) do
     Enum.find_index(colors, fn color -> color == rgb end)
+  end
+
+  defp colors_with_index do
+    colors |>
+    Enum.filter(fn color -> color != nil end) |>
+    Enum.with_index
+  end
+
+  defp each_chunk(colors_in_chunk) do
+    background_row(colors_in_chunk) <>
+    "\n" <>
+    background_row(colors_in_chunk) <>
+    "\n" <>
+    info_row(colors_in_chunk) <>
+    "\n" <>
+    background_row(colors_in_chunk) <>
+    "\n" <>
+    background_row(colors_in_chunk)
+  end
+
+  def background_row(colors_in_row) do
+    colors_in_row |>
+    Enum.map(&(background(&1))) |>
+    Enum.join
+  end
+
+  def info_row(colors_in_row) do
+    colors_in_row |>
+    Enum.map(&(write(&1))) |>
+    Enum.join
+  end
+
+  def background({ color, index }) do
+    Palette.Style.bg String.duplicate(" ", 13), color
+  end
+
+  def write({ color, index }) do
+    font_color = Palette.Color.furthest(color, [RGB.white, RGB.black])
+    Palette.Style.color "   #{RGB.encode(color)}   ", font_color, color
   end
 
   defp colors do
