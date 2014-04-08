@@ -1,9 +1,9 @@
 defmodule RGB do
   def closest_color(rgb_string) when is_binary rgb_string do
-    rgb_string |> parse_rgb |> Palette.ColorPalette.closest
+    rgb_string |> parse_rgb |> Palette.Color.Palette.closest
   end
   def closest_color(rgb_list) when is_list rgb_list do
-    rgb_list |> Palette.ColorPalette.closest
+    rgb_list |> Palette.Color.Palette.closest
   end
 
   def encode([r, g, b]) do

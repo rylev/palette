@@ -40,7 +40,7 @@ defmodule Palette.Style do
   end
 
   defp ansi_code(rgb) do
-    rgb |> RGB.closest_color |> Palette.ColorPalette.ansi_code
+    rgb |> RGB.closest_color |> Palette.Color.Palette.ansi_code
   end
 
   defp process(string, process_fun) do

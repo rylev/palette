@@ -1,19 +1,26 @@
-defmodule Palette.Color do
-
-  def distance(color1, color2) do
+defmodule Palette.Color.Distance do
+  def calculate(color1, color2) do
     delta_e_2000 rgb_to_lab(color1), rgb_to_lab(color2)
   end
 
   def closest(color, comparison_colors) when is_list comparison_colors do
-    comparison_colors |> Enum.map(&([&1, abs(distance(color, &1))])) |> Enum.sort(fn ([_,d1], [_,d2]) -> d1 < d2 end) |> List.first |> List.first
+    [[closest,_]|_] = compare_colors(color, comparison_colors, fn d1, d2 -> d1 < d2 end)
+    closest
   end
 
   def furthest(color, comparison_colors) when is_list comparison_colors do
-    comparison_colors |> Enum.map(&([&1, abs(distance(color, &1))])) |> Enum.sort(fn ([_,d1], [_,d2]) -> d1 > d2 end) |> List.first |> List.first
+    [[furthest,_]|_] = compare_colors(color, comparison_colors, fn d1, d2 -> d1 > d2 end)
+    furthest
+  end
+
+  defp compare_colors(color, comparison_colors, compare_fun) do
+    comparison_colors |>
+      Enum.map(&([&1, abs(calculate(color, &1))])) |>
+      Enum.sort(fn ([_,d1], [_,d2]) -> compare_fun.(d1, d2) end)
   end
 
   # http://www.easyrgb.com/index.php?X=MATH&H=02#text2
-  def rgb_to_xyz(rgb) do
+  defp rgb_to_xyz(rgb) do
     [r, g, b] = Enum.map rgb, fn v ->
       v = v / 255
       if v > 0.04045 do
@@ -32,29 +39,28 @@ defmodule Palette.Color do
     [x, y, z]
   end
 
-  def rgb_to_lab(rgb) do
+  defp rgb_to_lab(rgb) do
     rgb |> rgb_to_xyz |> xyz_to_lab
   end
 
   # https://github.com/pazdera/tco/blob/master/lib/tco/palette.rb#L95
-  def xyz_to_lab(xyz) do
-      f = fn t ->
-        if t > :math.pow (6/29), 3 do
-          :math.pow t, 1/3
-        else
-          (1/3) * (:math.pow 29/6, 2) * t + (4/29)
-        end
+  defp xyz_to_lab([x,y,z]) do
+    f = fn t ->
+      if t > :math.pow (6/29), 3 do
+        :math.pow t, 1/3
+      else
+        (1/3) * (:math.pow 29/6, 2) * t + (4/29)
       end
-      [x, y, z] = xyz
-      [xn, yn, zn] = rgb_to_xyz [255, 255, 255]
-      l = 116 * f.(y/yn) - 16
-      a = 500 * (f.(x/xn) - f.(y/yn))
-      b = 200 * (f.(y/yn) - f.(z/zn))
+    end
+    [xn, yn, zn] = rgb_to_xyz [255, 255, 255]
+    l = 116 * f.(y/yn) - 16
+    a = 500 * (f.(x/xn) - f.(y/yn))
+    b = 200 * (f.(y/yn) - f.(z/zn))
 
-      [l, a, b]
+    [l, a, b]
   end
 
-  def cie_lab_2_hue(a, b) do
+  defp cie_lab_2_hue(a, b) do
     cond do
       (a >= 0 && b == 0) -> 0
       (a <  0 && b == 0) -> 180
@@ -70,9 +76,7 @@ defmodule Palette.Color do
     end
   end
 
-  def delta_e_2000(lab1, lab2) do
-    [l1, a1, b1] = lab1
-    [l2, a2, b2] = lab2
+  defp delta_e_2000([l1, a1, b1], [l2, a2, b2]) do
     [kl, kc, kh] = [1, 1, 1]
 
     xC1 = :math.sqrt(:math.pow(a1, 2) + :math.pow(b1, 2))

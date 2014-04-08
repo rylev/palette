@@ -1,4 +1,4 @@
-defmodule Palette.ColorPalette do
+defmodule Palette.Color.Palette do
   @colors [
     # ANSI colours (the first 16) are configurable by users in most
     # terminals. Therefore, they're not used for colour matching, unless
@@ -274,7 +274,7 @@ defmodule Palette.ColorPalette do
   end
 
   def closest(rgb) do
-    Palette.Color.closest(rgb, Enum.filter(colors, &(&1 != nil)))
+    Palette.Color.Distance.closest(rgb, Enum.filter(colors, &(&1 != nil)))
   end
 
   def ansi_code(rgb) do
@@ -316,7 +316,7 @@ defmodule Palette.ColorPalette do
   end
 
   def write({ color, index }) do
-    font_color = Palette.Color.furthest(color, [RGB.white, RGB.black])
+    font_color = Palette.Color.Distance.furthest(color, [RGB.white, RGB.black])
     Palette.Style.color "   #{RGB.encode(color)}   ", font_color, color
   end
 
