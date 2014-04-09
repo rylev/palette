@@ -32,6 +32,10 @@ defmodule Palette.Style do
     process string, &(IO.ANSI.escape "%{underline}#{&1}")
   end
 
+  def inverse(string) do
+    process string, &(IO.ANSI.escape "%{inverse}#{&1}")
+  end
+
   defp background(content, rgb) do
     background("#{ansi_code(rgb)}m" <> content)
   end

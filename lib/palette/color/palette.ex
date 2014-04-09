@@ -273,7 +273,8 @@ defmodule Palette.Color.Palette do
   defp colors, do: unquote(colors)
 
   def display do
-    colors_with_index |>
+    colors |>
+      Enum.filter(fn color -> color != nil end) |>
       Enum.chunk(9) |>
       Enum.map(&each_chunk/1) |>
       Enum.join("\n")
@@ -291,12 +292,6 @@ defmodule Palette.Color.Palette do
 
   def ansi_code(rgb) do
     Enum.find_index(colors, fn color -> color == rgb end)
-  end
-
-  defp colors_with_index do
-    colors |>
-      Enum.filter(fn color -> color != nil end) |>
-      Enum.with_index
   end
 
   defp each_chunk(colors_in_chunk) do
@@ -321,11 +316,11 @@ defmodule Palette.Color.Palette do
       Enum.join
   end
 
-  defp background({ color, index }) do
+  defp background(color) do
     Palette.Style.bg String.duplicate(" ", 15), color
   end
 
-  defp write({ color, index }) do
+  defp write(color) do
     font_color = Palette.Color.Distance.furthest(color, [Palette.RGB.white, Palette.RGB.black])
     Palette.Style.color "    #{Palette.RGB.encode(color)}    ", font_color, color
   end
@@ -347,18 +342,10 @@ defmodule Palette.ColorCache do
     :gen_server.call(__MODULE__, { :get, color })
   end
 
-  def kill do
-    :gen_server.cast(__MODULE__, { :kill })
-  end
-
   ## Callbacks
 
   def init(:ok) do
     { :ok, Map.new }
-  end
-
-  def handle_cast({ :kill }, cache) do
-    { :noreply, Map.new }
   end
 
   def handle_call({ :get, color }, _from, cache) do
