@@ -5,5 +5,6 @@ defmodule Palette do
   # for more information on OTP Applications
   def start(_type, _args) do
     Palette.Supervisor.start_link
+    Palette.ColorCache.start_link
   end
 end

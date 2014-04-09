@@ -280,7 +280,13 @@ defmodule Palette.Color.Palette do
   end
 
   def closest(rgb) do
-    Palette.Color.Distance.closest(rgb, Enum.filter(colors, &(&1 != nil)))
+    case Palette.ColorCache.get(rgb) do
+      nil ->
+        closest = Palette.Color.Distance.closest(rgb, Enum.filter(colors, &(&1 != nil)))
+        Palette.ColorCache.update(Map.new([{rgb, closest}]))
+        closest
+      closest_color -> closest_color
+    end
   end
 
   def ansi_code(rgb) do
@@ -323,5 +329,47 @@ defmodule Palette.Color.Palette do
     font_color = Palette.Color.Distance.furthest(color, [Palette.RGB.white, Palette.RGB.black])
     Palette.Style.color "    #{Palette.RGB.encode(color)}    ", font_color, color
   end
+end
 
+defmodule Palette.ColorCache do
+  @moduledoc false
+  use GenServer.Behaviour
+
+  def start_link do
+    :gen_server.start_link({ :local, __MODULE__ }, __MODULE__, :ok, [])
+  end
+
+  def update(new_color = %{}) do
+    :gen_server.cast(__MODULE__, { :update, new_color })
+  end
+
+  def get(color) when is_list color do
+    :gen_server.call(__MODULE__, { :get, color })
+  end
+
+  def kill do
+    :gen_server.cast(__MODULE__, { :kill })
+  end
+
+  ## Callbacks
+
+  def init(:ok) do
+    { :ok, Map.new }
+  end
+
+  def handle_cast({ :kill }, cache) do
+    { :noreply, Map.new }
+  end
+
+  def handle_call({ :get, color }, _from, cache) do
+    closest = case Map.fetch(cache, color) do
+      { :ok, c } -> c
+      :error -> nil
+    end
+    { :reply, closest, cache }
+  end
+
+  def handle_cast({ :update, new_color }, cache) do
+    { :noreply, Map.merge(new_color, cache) }
+  end
 end
