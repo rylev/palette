@@ -7,4 +7,4 @@ influenced by the Ruby gem [tco](https://github.com/pazdera/tco).
 
 To see Palette in action run an example script with mix. For example:
 
-`mix run examples/union_jack.exs`
+`mix run examples/flags.exs`
