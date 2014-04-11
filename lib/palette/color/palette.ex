@@ -1,8 +1,7 @@
 defmodule Palette.Color.Palette do
   colors = [
     # ANSI colours (the first 16) are configurable by users in most
-    # terminals. Therefore, they're not used for colour matching, unless
-    # they were explicitly configured in tco.conf.
+    # terminals.
     #
     # The colour values in comments are the defaults for xterm.
     nil, # [0, 0, 0]
@@ -293,7 +292,7 @@ defmodule Palette.Color.Palette do
     end
   end
 
-  def ansi_code(rgb) do
+  def color_code(rgb) do
     Enum.find_index(colors, fn color -> color == rgb end)
   end
 

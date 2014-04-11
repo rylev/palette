@@ -1,4 +1,4 @@
-defmodule Palette.Ansi do
+defmodule Palette.ExtendedColor do
   @moduledoc false
   def foreground(rgb, content) do
     "\e[38;5;" <> "#{code(rgb)}m" <> content <> postfix
@@ -13,6 +13,6 @@ defmodule Palette.Ansi do
   end
 
   defp code(rgb) do
-    rgb |> Palette.RGB.closest_color |> Palette.Color.Palette.ansi_code
+    rgb |> Palette.RGB.closest_color |> Palette.Color.Palette.color_code
   end
 end

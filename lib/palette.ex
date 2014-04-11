@@ -111,11 +111,11 @@ defmodule Palette do
   end
 
   defp background(content, rgb) do
-    Palette.Ansi.background(rgb, content)
+    Palette.ExtendedColor.background(rgb, content)
   end
 
   defp foreground(content, rgb) do
-    Palette.Ansi.foreground(rgb, content)
+    Palette.ExtendedColor.foreground(rgb, content)
   end
 
   defp process(string, process_fun) do
