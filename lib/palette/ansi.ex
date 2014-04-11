@@ -1,4 +1,5 @@
 defmodule Palette.Ansi do
+  @moduledoc false
   def foreground(rgb, content) do
     "\e[38;5;" <> "#{code(rgb)}m" <> content <> postfix
   end

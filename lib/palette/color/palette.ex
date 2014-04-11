@@ -273,9 +273,12 @@ defmodule Palette.Color.Palette do
   defp colors, do: unquote(colors)
 
   def display do
+      IO.inspect(block_width)
+      IO.inspect(number_of_columns)
+      IO.inspect(div(block_width, number_of_columns))
     colors |>
       Enum.filter(fn color -> color != nil end) |>
-      Enum.chunk(9) |>
+      Enum.chunk(div(number_of_columns, block_width)) |>
       Enum.map(&each_chunk/1) |>
       Enum.join("\n")
   end
@@ -317,12 +320,21 @@ defmodule Palette.Color.Palette do
   end
 
   defp background(color) do
-    Palette.bg String.duplicate(" ", 15), color
+    Palette.bg String.duplicate(" ", block_width), color
   end
 
   defp write(color) do
     font_color = Palette.Color.Distance.furthest(color, [Palette.RGB.white, Palette.RGB.black])
     Palette.color "    #{Palette.RGB.encode(color)}    ", color, font_color
+  end
+
+  def number_of_columns do
+    {:ok, num_cols } = :io.columns
+    num_cols
+  end
+
+  def block_width do
+    15
   end
 end
 
