@@ -103,6 +103,13 @@ defmodule Palette do
     process string, &(IO.ANSI.escape "%{inverse}#{&1}")
   end
 
+  @doc """
+    Print out the entire supported color palette to Standard Out
+  """
+  def display do
+    IO.puts Palette.Color.Palette.display
+  end
+
   defp background(content, rgb) do
     Palette.Ansi.background(rgb, content)
   end
