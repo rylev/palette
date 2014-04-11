@@ -281,10 +281,10 @@ defmodule Palette.Color.Palette do
   end
 
   def closest(rgb) do
-    case Palette.ColorCache.get(rgb) do
+    case Palette.Color.Cache.get(rgb) do
       nil ->
         closest = Palette.Color.Distance.closest(rgb, Enum.filter(colors, &(&1 != nil)))
-        Palette.ColorCache.update(Map.new([{rgb, closest}]))
+        Palette.Color.Cache.update(Map.new([{rgb, closest}]))
         closest
       closest_color -> closest_color
     end
@@ -317,16 +317,16 @@ defmodule Palette.Color.Palette do
   end
 
   defp background(color) do
-    Palette.Style.bg String.duplicate(" ", 15), color
+    Palette.bg String.duplicate(" ", 15), color
   end
 
   defp write(color) do
     font_color = Palette.Color.Distance.furthest(color, [Palette.RGB.white, Palette.RGB.black])
-    Palette.Style.color "    #{Palette.RGB.encode(color)}    ", font_color, color
+    Palette.color "    #{Palette.RGB.encode(color)}    ", color, font_color
   end
 end
 
-defmodule Palette.ColorCache do
+defmodule Palette.Color.Cache do
   @moduledoc false
   use GenServer.Behaviour
 
