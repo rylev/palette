@@ -3,7 +3,7 @@ defmodule Palette.Mixfile do
 
   def project do
     [app: :palette,
-     version: "0.0.1",
+     version: "0.1.0",
      elixir: "~> 0.13.0-dev",
      deps: deps]
   end
