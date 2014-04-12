@@ -10,9 +10,7 @@ defmodule Palette do
     * English names: "red", "black", "yellow", etc.
   """
 
-  @doc """
-    Start the palette application
-  """
+  @doc false
   def start(_type, _args) do
     Palette.Color.Cache.start_link
   end
